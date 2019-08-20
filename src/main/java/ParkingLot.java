@@ -1,11 +1,8 @@
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class ParkingLot {
-
 
     private List<Level> levels;
 
@@ -18,44 +15,27 @@ public class ParkingLot {
 
     public boolean hasSpot() {
 
-        return levels.stream()
-                .filter(level -> level.getSpots().stream()
-                    .filter(s -> s.isAvailable())
-                    .findFirst().isPresent())
+        return levels.stream().filter(level -> level.getSpots()
+                .stream().filter(s -> s.isAvailable())
+                .findFirst().isPresent())
                 .anyMatch(l -> l.getSpots().size() > 0);
     }
 
     public Spot getSpot(String vechile) {
+        final Spot rval;
 
-        /*Optional<Level> level;
-        if (vechile.equals("large")) {
-            level = levels.stream().filter(lev -> {
-                return lev.getSpots().stream().filter(Spot::isAvailable).anyMatch(s -> s.getType().equals(SpotType.REGULAR));
-            }).findFirst();
+        List<Spot> spots = levels.stream()
+                .flatMap(level -> level.getSpots().stream()
+                        .filter(spot -> spot.isAvailable()))
+                .collect(Collectors.toList());
 
-        } else {
-            level = levels.stream().filter(lev -> lev.getSpots().stream().anyMatch(Spot::isAvailable)).findFirst();
-        }
+        rval = vechile == "large" ?
+                spots.stream()
+                        .filter(spot -> spot.getType().equals(SpotType.REGULAR))
+                        .findFirst().orElse(null)
+                : spots.stream()
+                .findFirst().orElse(null);
 
-        return    level.isPresent() ? level.get().getSpots().stream().findFirst().get() : null;
-        */
-
-        Spot rval = null;
-
-        for (Level level : levels) {
-            for (Spot spot : level.getSpots()) {
-                if (spot.isAvailable()) {
-                    if (spot.getType().equals(SpotType.REGULAR) && vechile == "large") {
-                        rval = spot;
-                        break;
-                    }
-                    if (vechile == "small") {
-                        rval = spot;
-                        break;
-                    }
-                }
-            }
-        }
         return rval;
     }
 
