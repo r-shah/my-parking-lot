@@ -21,7 +21,7 @@ public class ParkingLot {
                 .anyMatch(l -> l.getSpots().size() > 0);
     }
 
-    public Spot getSpot(String vechile) {
+    public Spot getSpot(VehicleType vehicleType) {
         final Spot rval;
 
         List<Spot> spots = levels.stream()
@@ -29,7 +29,7 @@ public class ParkingLot {
                         .filter(spot -> spot.isAvailable()))
                 .collect(Collectors.toList());
 
-        rval = vechile == "large" ?
+        rval = vehicleType.equals(VehicleType.LARGE) ?
                 spots.stream()
                         .filter(spot -> spot.getType().equals(SpotType.REGULAR))
                         .findFirst().orElse(null)
